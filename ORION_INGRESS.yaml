@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: orion-ingress
+  annotations:
+    kubernetes.io/ingress.class: kong
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    konghq.com/strip-path: "false"
+    konghq.com/override: https-only
+    konghq.com/plugins: key-auth
+spec:
+  tls:
+  - secretName: orion-ingress
+    hosts:
+    - ${HOST}.${DOMAIN}
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: "/version"
+        backend:
+          service:
+            name: orion
+            port:
+              number: 1026
+      - pathType: Prefix
+        path: "/v2/entities[/]?.*"
+        backend:
+          service:
+            name: orion
+            port:
+              number: 1026
+      - pathType: Prefix
+        path: "/v2/subscriptions[/]?.*"
+        backend:
+          service:
+            name: orion
+            port:
+              number: 1026

@@ -1,0 +1,67 @@
+kind: StatefulSet
+apiVersion: "apps/v1"
+metadata:
+  name: crate
+spec:
+  serviceName: "crate-set"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crate
+  template:
+    metadata:
+      labels:
+        app: crate
+    spec:
+      initContainers:
+      - name: init-sysctl
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        command: ["sysctl", "-w", "vm.max_map_count=262144"]
+        securityContext:
+          privileged: true
+      containers:
+      - name: crate
+        image: crate:5.1.1
+        command:
+          - /docker-entrypoint.sh
+          - -Cnode.name=crate
+          - -Ccluster.name=cratedb-cluster
+          - -Ccluster.initial_master_nodes=crate-0
+          - -Cdiscovery.seed_providers=srv
+          - -Cdiscovery.srv.query=_crate-internal._tcp.crate-internal-service.default.svc.cluster.local
+          - -Cgateway.recover_after_data_nodes=2
+          - -Cgateway.expected_data_nodes=3
+          - -Cpath.data=/data
+        volumeMounts:
+            - mountPath: /data
+              name: data
+        resources:
+          limits:
+            memory: 512Mi
+        ports:
+        - containerPort: 4300
+          name: crate-internal
+        - containerPort: 4200
+          name: crate-web
+        - containerPort: 5432
+          name: postgres
+        env:
+        - name: CRATE_HEAP_SIZE
+          value: "256m"
+        - name: EXPECTED_NODES
+          value: "3"
+        - name: CLUSTER_NAME
+          value: "my-crate"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+      volumes:
+        - name: data
+          emptyDir:
+            medium: "Memory"

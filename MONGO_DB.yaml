@@ -1,0 +1,23 @@
+architecture: replicaset
+
+replicaSetName: rs0
+
+replicaCount: 3
+
+image:
+  repository: bitnami/mongodb
+  tag: 4.4.15-debian-10-r2
+
+auth:
+  enabled: false
+
+persistence:
+  enabled: true
+  storageClass: default
+  size: 10Gi
+
+arbiter:
+  enabled: false
+
+hidden:
+  enabled: false

@@ -1,0 +1,13 @@
+king: Service
+apiversion: v1
+metadata:
+  name: crate-internal-service
+  labels:
+    app: crate
+spec:
+  type: ClusterIP
+  ports:
+  - port: 4200
+    name: crate-web
+  selector:
+    app: crate

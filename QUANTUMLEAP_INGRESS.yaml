@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: quantum-ingress
+  annotations:
+    kubernetes.io/ingress.class: kong
+    konghq.com/methods: GET
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    konghq.com/strip-path: "false"
+    konghq.com/override: https-only
+    konghq.com/plugins: key-auth
+spec:
+  tls:
+  - secretName: quantum-ingress
+    hosts:
+    - quantumleap.c-3lab.org
+  rules:
+  - host: quantumleap.c-3lab.org
+    http:
+      paths:
+        - pathType: Prefix
+          path: "/version"
+          backend:
+            service:
+              name: quantumleap
+              port:
+                number: 8668
+        - pathType: Prefix
+          path: "/v2[/]?.*"
+          backend:
+            service:
+              name: quantumleap
+              port:
+                number: 8668
