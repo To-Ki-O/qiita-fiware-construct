@@ -24,8 +24,36 @@ Azureポータルにログイン
 
 ### Orion, MongoDB, Kong
 
+AzureにCLIからログイン
 ```
 azure login --tenant TENANT_NAME
+```
+
+Azure AKSに接続
+```
+az aks get-credentials --resource-group RESOURCE_GROUP_NAME --name AKS_NAME --overwrite-existing
+```
+
+Helmを利用してMongoDBを構築
+```
+helm repo add azure-marketplace https://marketplace.azurecr.io/helm/v1/repo
+helm repo update
+helm install azure-marketplace/mongodb --name-template mongodb -f ./qiita-fiware-construct/MONGO_DB.yaml
+```
+
+クラスター化の設定
+```
+kubectl run mongodb-client --rm --tty -i --restart='Never' --image marketplace.azurecr.io/bitnami/mongodb:4.4.15-debian-10-r2 --command -- \
+  mongosh admin --host 'mongodb-0.mongodb-headless.default.svc.cluster.local:27017,mongodb-1.mongodb-headless.default.svc.cluster.local:27017,mongodb-2.mongodb-headless.default.svc.cluster.local:27017' \
+  --eval 'rs.add("mongodb-1.mongodb-headless.default.svc.cluster.local:27017")'
+
+kubectl run mongodb-client --rm --tty -i --restart='Never' --image marketplace.azurecr.io/bitnami/mongodb:4.4.15-debian-10-r2 --command -- \
+  mongosh admin --host 'mongodb-0.mongodb-headless.default.svc.cluster.local:27017,mongodb-1.mongodb-headless.default.svc.cluster.local:27017,mongodb-2.mongodb-headless.default.svc.cluster.local:27017' \
+  --eval 'rs.add("mongodb-2.mongodb-headless.default.svc.cluster.local:27017")'
+
+kubectl run mongodb-client --rm --tty -i --restart='Never' --image marketplace.azurecr.io/bitnami/mongodb:4.4.15-debian-10-r2 --command -- \
+  mongosh admin --host 'mongodb-0.mongodb-headless.default.svc.cluster.local:27017,mongodb-1.mongodb-headless.default.svc.cluster.local:27017,mongodb-2.mongodb-headless.default.svc.cluster.local:27017' \
+  --eval 'rs.status().members.map(function(e) {return {name: e.name, stateStr:e.stateStr};})'
 ```
 
 より詳細な情報はQiita記事をご覧ください！
