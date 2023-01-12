@@ -126,4 +126,10 @@ kubectl apply -f ./qiita-fiware-construct/CRATEDB_DEPLOYMENT.yaml
 
 より詳細な情報はQiita記事をご覧ください！
 
-## LISENCE
+## LICENSE
+
+[MIT LICENSE](https://github.com/To-Ki-O/qiita-fiware-construct/blob/main/LICENSE)
+
+## CopyRight
+
+Copyright (c) 2023 Tokio Miyaoka
