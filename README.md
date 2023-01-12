@@ -56,4 +56,63 @@ kubectl run mongodb-client --rm --tty -i --restart='Never' --image marketplace.a
   --eval 'rs.status().members.map(function(e) {return {name: e.name, stateStr:e.stateStr};})'
 ```
 
+Orionをデプロイ
+```
+kubectl apply -f ./qiita-fiware-construct/ORION_SERVICE.yaml
+kubectl apply -f ./qiita-fiware-construct/ORION_DEPLOYMENT.yaml
+```
+
+Kongをデプロイ
+```
+kubectl create -f https://bit.ly/k4k8s
+kubectl -n kong scale deployments.v1.apps/ingress-kong --replicas=1
+```
+
+***ドメイン名の取得***
+
+Azureポータル上で"App Service ドメイン"と検索し、一意のドメイン名を所得
+※ドメイン1つにつき、11.99米国ドルかかります。
+
+```
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.8.2/cert-manager.yaml
+```
+
+```
+az network dns record-set a add-record --resource-group DNS_RESOURCE_GROUP --zone-name "DOMAIN_NAME" --record-set-name "HOST_NAME" --ipv4-address "KONG_EXTERNAL_IP"
+```
+
+```
+kubectl apply -f ./qiita-fiware-construct/CERTMANAGER_CLUSTERISSURE.yaml
+```
+
+```
+kubectl apply -f ./qiita-fiware-construct/KONG_INGRESS.yaml
+```
+
+```
+kubectl create secret generic kong-keyauth --from-literal=kongCredType=key-auth --from-literal=key=API_KEY
+kubectl apply -f ./qiita-fiware-construct/KONG_CONSUMER.yaml
+kubectl apply -f ./qiita-fiware-construct/KONG_PLUGINS.yaml
+```
+
+```
+kubectl apply -f ./qiita-fiware-construct/ORION_INGRESS.yaml
+```
+
+```
+kubectl apply -f ./qiita-fiware-construct/QUANTUMLEAP_SERVICE.yaml
+kubectl apply -f ./qiita-fiware-construct/QUANTUMLEAP_STATEFULSET.yaml
+```
+
+```
+kubectl apply -f ./qiita-fiware-construct/QUANTUMLEAP_INGRESS.yaml
+```
+
+```
+kubectl apply -f ./qiita-fiware-construct/CRATEDB_SERVICE.yaml
+kubectl apply -f ./qiita-fiware-construct/CRATEDB_DEPLOYMENT.yaml
+```
+
+
+
 より詳細な情報はQiita記事をご覧ください！
