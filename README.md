@@ -73,46 +73,53 @@ kubectl -n kong scale deployments.v1.apps/ingress-kong --replicas=1
 Azureポータル上で"App Service ドメイン"と検索し、一意のドメイン名を所得
 ※ドメイン1つにつき、11.99米国ドルかかります。
 
+Cert-managerをデプロイ
 ```
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.8.2/cert-manager.yaml
 ```
 
+Kongを通るようにレコードを設定
 ```
 az network dns record-set a add-record --resource-group DNS_RESOURCE_GROUP --zone-name "DOMAIN_NAME" --record-set-name "HOST_NAME" --ipv4-address "KONG_EXTERNAL_IP"
 ```
 
+TLS証明書を取得
 ```
 kubectl apply -f ./qiita-fiware-construct/CERTMANAGER_CLUSTERISSURE.yaml
 ```
 
+HTTPS通信のみを許可するように設定
 ```
 kubectl apply -f ./qiita-fiware-construct/KONG_INGRESS.yaml
 ```
 
+APIキーを使った認証を設定
 ```
 kubectl create secret generic kong-keyauth --from-literal=kongCredType=key-auth --from-literal=key=API_KEY
 kubectl apply -f ./qiita-fiware-construct/KONG_CONSUMER.yaml
 kubectl apply -f ./qiita-fiware-construct/KONG_PLUGINS.yaml
 ```
 
+Orionへの通信設定
 ```
 kubectl apply -f ./qiita-fiware-construct/ORION_INGRESS.yaml
 ```
 
+QuantumLeapをデプロイ
 ```
 kubectl apply -f ./qiita-fiware-construct/QUANTUMLEAP_SERVICE.yaml
 kubectl apply -f ./qiita-fiware-construct/QUANTUMLEAP_STATEFULSET.yaml
 ```
 
+QuantumLeapへの通信設定
 ```
 kubectl apply -f ./qiita-fiware-construct/QUANTUMLEAP_INGRESS.yaml
 ```
 
+CrateDBのデプロイと設定
 ```
 kubectl apply -f ./qiita-fiware-construct/CRATEDB_SERVICE.yaml
 kubectl apply -f ./qiita-fiware-construct/CRATEDB_DEPLOYMENT.yaml
 ```
-
-
 
 より詳細な情報はQiita記事をご覧ください！
