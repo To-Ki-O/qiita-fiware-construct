@@ -6,21 +6,26 @@
 
 http://
 
-## 構築環境
+## 構築について
 
-* Azure AKS
-    * Standard A4 v2
-    * ノード数 3
+### Azure
 
-## 構築出来るもの
+Azureポータルにログイン
+ポータル上部にある検索バーで"Kebernetes サービス"と検索
+以下の設定でAKSを構築
 
-本リポジトリで公開されているyamlファイルで構築可能なのは以下の通りです！
+* サブスクリプション：任意
+* リソースグループ：任意
+* クラスター名：任意
+* 地域：任意(私は"Japan East"で作成)
+* ノードサイズ：Standard A4 v2
+* スケーリング方法：手動
+* ノード数：3
 
-* FIWARE
-    * Orion
-    * MongoDB
-    * Kong
-    * QuantumLeap
-    * CrateDB
+### Orion, MongoDB, Kong
+
+```
+azure login --tenant TENANT_NAME
+```
 
 より詳細な情報はQiita記事をご覧ください！
