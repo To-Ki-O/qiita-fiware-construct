@@ -105,6 +105,8 @@ Orionへの通信設定
 kubectl apply -f ./qiita-fiware-construct/ORION_INGRESS.yaml
 ```
 
+### QuantumLeap, CrateDB
+
 QuantumLeapをデプロイ
 ```
 kubectl apply -f ./qiita-fiware-construct/QUANTUMLEAP_SERVICE.yaml
@@ -123,3 +125,5 @@ kubectl apply -f ./qiita-fiware-construct/CRATEDB_DEPLOYMENT.yaml
 ```
 
 より詳細な情報はQiita記事をご覧ください！
+
+## LISENCE
